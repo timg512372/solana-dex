@@ -37,9 +37,9 @@ const pools: any = {
 
 const weighting: any = {
   sol_usdc: 0.75,
-  usdc_usdt: 0.25,
-  samo_usdc: 0.25,
-  tmac_usdc: 0.25,
+  usdc_usdt: 0.25 * 0.001,
+  samo_usdc: 0.25 * 0.001,
+  tmac_usdc: 0.25 * 0.001,
 };
 
 const reversed_pools = ["samo_usdc", "tmac_usdc"];
@@ -63,32 +63,36 @@ router.post("/deposit", async function (req, res) {
 
   const whirlpoolClient = buildWhirlpoolClient(ctx);
 
-  for (const pool of Object.keys(pools)) {
-    const whirlpool = await whirlpoolClient.getPool(pools[pool], true);
+  try {
+    for (const pool of Object.keys(pools)) {
+      const whirlpool = await whirlpoolClient.getPool(pools[pool], true);
 
-    const whirlpoolData = await whirlpool.refreshData();
-    const fetcher = ctx.fetcher;
+      const whirlpoolData = await whirlpool.refreshData();
+      const fetcher = ctx.fetcher;
 
-    const inputTokenQuote = await swapQuoteByInputToken(
-      whirlpool,
-      reversed_pools.includes(pool)
-        ? whirlpoolData.tokenMintB
-        : whirlpoolData.tokenMintA,
-      new u64(amount * weighting[pool]),
-      Percentage.fromFraction(1, 1000), // 0.1%
-      ctx.program.programId,
-      fetcher,
-      true
-    );
+      const inputTokenQuote = await swapQuoteByInputToken(
+        whirlpool,
+        reversed_pools.includes(pool)
+          ? whirlpoolData.tokenMintB
+          : whirlpoolData.tokenMintA,
+        new u64(amount * weighting[pool]),
+        Percentage.fromFraction(1, 1000), // 0.1%
+        ctx.program.programId,
+        fetcher,
+        true
+      );
 
-    // Send out the transaction
-    const txId = await (
-      await whirlpool.swap(inputTokenQuote)
-    ).buildAndExecute();
-    console.log(pool, txId);
+      // Send out the transaction
+      const txId = await (
+        await whirlpool.swap(inputTokenQuote)
+      ).buildAndExecute();
+      console.log(pool, txId);
+    }
+  } catch (e) {
+    return res.status(500).json(e);
   }
 
-  return res.status(200).json("Hello");
+  return res.status(200).json("Success");
 });
 
 module.exports = router;
