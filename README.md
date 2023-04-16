@@ -37,7 +37,7 @@ We split our group into 2 teams, each focusing on a specific component of the pr
 - Minting, burning, and swaps
 - Orca is our swap provider
 
-<br />
+<br />  
 ## 🚧 Challenges we ran into
 A recurring challenge that we faced when building SolStash was the lack of clear documentation among Solana projects. In our quest to find a viable AMM that could faciliate the trades for our ETF, we tried Radium's SDK, Radium's contract, Orca's contracts, and the Solana native token-swap protocol before we finally managed to get Orca's price SDK to work. Often times, we would encounter strange bugs with cryptic issues.
 
