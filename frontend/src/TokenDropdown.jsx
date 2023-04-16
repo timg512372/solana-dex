@@ -1,42 +1,52 @@
-import { useState, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { Transition, Menu, Dialog, Listbox } from "@headlessui/react";
-import { tokenDropdown, tokenDropdownAmount } from "./TokenDropdown.module.css";
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import "./TokenDropdown.css";
 
 const TokenDropdown = ({ options, value, setValue }) => {
-  return (
-    <div className={tokenDropdown}>
-      <Listbox value={value} onChange={setValue}>
-        <Listbox.Button>
-          <img
-            className="token-menu-icon"
-            src={`/tokens/${value}.png`}
-            alt={`${value} icon`}
-          /> {value}
-        </Listbox.Button>
-        <Listbox.Options>
-          {options.map((token) => (
-            <Listbox.Option
-              key={token.value}
-              value={token.value}
-            >
-              <img
-                className="token-menu-icon"
-                src={`/tokens/${token.value}.png`}
-                alt={`${token.value} icon`}
-              />
-              {token.label}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
-      </Listbox>
+  //conv rate: 24.48
 
-      <div className="token-amount-container">
-        <input
-          className={tokenDropdownAmount}
-          type="text"
-          placeholder="0.00"
+  const [enteredValue, setEnteredValue] = useState("");
+  const [isFocused, setFocus] = useState(false);
+
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction } = useWallet();
+  const [ balance, setBalance ] = useState(0);
+
+  useEffect(() => {
+    (async  () => {
+      let balance = await connection.getBalance(publicKey);
+      setBalance(balance);
+    })();
+  }, [publicKey]);
+
+  const inUSD = ((+enteredValue || 0) * 24.48).toFixed(2);
+
+  return (
+    <div className={`token-dropdown ${isFocused ? "token-dropdown-focused" : ""}`}>
+      <input
+        className="token-dropdown_amount"
+        type="text"
+        placeholder="0.00"
+        value={enteredValue}
+        onChange={(e) => setEnteredValue(e.target.value)}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}
+      />
+
+      <div className="token-dropdown_button">
+        <img
+          className="token-menu-icon"
+          src={`/tokens/${value}.png`}
+          alt={`${value} icon`}
         />
+        <span>{value}</span>
       </div>
+
+      
+      <span className="token-dropdown_stack_bottom token-dropdown_left">≈ ${inUSD} USD</span>
+
+      <span className="token-dropdown_stack_bottom token-dropdown_right">Up To {balance} SOL</span>
     </div>
   );
 };
