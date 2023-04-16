@@ -1,15 +1,15 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   align-items: center;
   text-align: center;
 }
 
-h1 {
+.app-title {
   font-size: 4rem;
   font-weight: 800;
   line-height: 1.1;
   margin: 3rem 0;
   color: white;
 }
+

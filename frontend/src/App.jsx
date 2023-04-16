@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useCallback, useEffect } from "react";
 import { Transition, Menu, Dialog } from '@headlessui/react'
 import classNames from 'classnames';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
@@ -8,44 +8,26 @@ import SwapBox from "./SwapBox";
 
 import "./App.css";
 
-export const SendSOLToRandomAddress  = () => {
+function App() {
+
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
+  const [ balance, setBalance ] = useState(0);
 
-  const onClick = useCallback(async () => {
-      if (!publicKey) throw new WalletNotConnectedError();
-
-      // 890880 lamports as of 2022-09-01
-      const lamports = await connection.getMinimumBalanceForRentExemption(0);
-
-      const transaction = new Transaction().add(
-          SystemProgram.transfer({
-              fromPubkey: publicKey,
-              toPubkey: Keypair.generate().publicKey,
-              lamports,
-          })
-      );
-
-      const {
-          context: { slot: minContextSlot },
-          value: { blockhash, lastValidBlockHeight }
-      } = await connection.getLatestBlockhashAndContext();
-
-      const signature = await sendTransaction(transaction, connection, { minContextSlot });
-
-      await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature });
-  }, [publicKey, sendTransaction, connection]);
-}
-
-function App() {
+  useEffect(() => {
+    (async  () => {
+      let balance = await connection.getBalance(publicKey);
+      setBalance(balance);
+    })();
+  }, [publicKey]);
 
   return (
     <div className="App">
       <div>
-        <h1>Investing in the Future of<br></br>Solana</h1>
-      <div className="content-container">
+        <h1 className="app-title">Investing in the Future of<br></br>Solana</h1>
+        {publicKey && (<div className="content-container">
           <SwapBox />
-        </div>
+        </div>)}
       </div>
     </div>
   );
