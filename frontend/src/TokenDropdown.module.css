@@ -1,0 +1,10 @@
+.tokenDropdown {
+    display: flex;
+    background: rgb(55 65 81);;
+}
+
+.tokenDropdownAmount {
+    color: #FFF;
+    font-size: 2rem;
+    font-family: 'Courier New', Courier, monospace;
+}
