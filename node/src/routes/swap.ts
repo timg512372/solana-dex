@@ -4,10 +4,10 @@ import * as anchor from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
   getAssociatedTokenAddress,
+  getMint,
   getOrCreateAssociatedTokenAccount,
   transfer,
 } from "../../node_modules/@solana/spl-token";
-import { u64 } from "@solana/spl-token";
 import { AddressUtil, Percentage, ZERO } from "@orca-so/common-sdk";
 import idl from "../aggregator.json";
 import { BN } from "bn.js";
@@ -44,8 +44,6 @@ const [mint] = anchor.web3.PublicKey.findProgramAddressSync(
   program.programId
 );
 
-console.log(provider);
-
 const pools: any = {
   sol_usdc: new PublicKey("3KBZiL2g8C7tiJ32hTv5v3KM7aK9htpqTw4cTXz1HvPt"),
   usdc_usdt: new PublicKey("63cMwvN8eoaD39os9bKP8brmA7Xtov9VxahnPufWCSdg"),
@@ -73,42 +71,43 @@ router.post("/deposit", async function (req, res) {
     });
   }
 
-  // const whirlpool_devnet_id = new PublicKey(
-  //   "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
-  // );
+  const whirlpool_devnet_id = new PublicKey(
+    "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
+  );
 
-  // const ctx = WhirlpoolContext.withProvider(provider, whirlpool_devnet_id);
+  const ctx = WhirlpoolContext.withProvider(provider, whirlpool_devnet_id);
 
-  // const whirlpoolClient = buildWhirlpoolClient(ctx);
+  const whirlpoolClient = buildWhirlpoolClient(ctx);
 
-  // try {
-  //   for (const pool of Object.keys(pools)) {
-  //     const whirlpool = await whirlpoolClient.getPool(pools[pool], true);
+  try {
+    for (const pool of Object.keys(pools)) {
+      const whirlpool = await whirlpoolClient.getPool(pools[pool], true);
 
-  //     const whirlpoolData = await whirlpool.refreshData();
-  //     const fetcher = ctx.fetcher;
+      const whirlpoolData = await whirlpool.refreshData();
+      const fetcher = ctx.fetcher;
 
-  //     const inputTokenQuote = await swapQuoteByInputToken(
-  //       whirlpool,
-  //       reversed_pools.includes(pool)
-  //         ? whirlpoolData.tokenMintB
-  //         : whirlpoolData.tokenMintA,
-  //       new u64(amount * weighting[pool]),
-  //       Percentage.fromFraction(1, 1000), // 0.1%
-  //       ctx.program.programId,
-  //       fetcher,
-  //       true
-  //     );
+      const inputTokenQuote = await swapQuoteByInputToken(
+        whirlpool,
+        reversed_pools.includes(pool)
+          ? whirlpoolData.tokenMintB
+          : whirlpoolData.tokenMintA,
+        new BN(amount * weighting[pool]),
+        Percentage.fromFraction(1, 1000), // 0.1%
+        ctx.program.programId,
+        fetcher,
+        true
+      );
 
-  //     // Send out the transaction
-  //     const txId = await (
-  //       await whirlpool.swap(inputTokenQuote)
-  //     ).buildAndExecute();
-  //     console.log(pool, txId);
-  //   }
-  // } catch (e) {
-  //   return res.status(500).json(e);
-  // }
+      // Send out the transaction
+      const txId = await (
+        await whirlpool.swap(inputTokenQuote)
+      ).buildAndExecute();
+      console.log(pool, txId);
+    }
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json(e);
+  }
 
   const rootAccount = await getAssociatedTokenAddress(
     mint,
@@ -144,6 +143,9 @@ router.post("/deposit", async function (req, res) {
 router.post("/withdraw", async function (req, res) {
   const { address, amount } = req.body;
 
+  // const supply = Number((await getMint(connection, mint)).supply);
+  // const fraction = amount / supply;
+
   if (!address || !amount) {
     return res.status(500).json({
       error: "Missing required fields ",
@@ -158,8 +160,10 @@ router.post("/withdraw", async function (req, res) {
 
   const whirlpoolClient = buildWhirlpoolClient(ctx);
 
+  const keys = Object.keys(pools);
+  keys.reverse();
   try {
-    for (const pool of Object.keys(pools)) {
+    for (const pool of keys) {
       const whirlpool = await whirlpoolClient.getPool(pools[pool], true);
 
       const whirlpoolData = await whirlpool.refreshData();
@@ -168,9 +172,9 @@ router.post("/withdraw", async function (req, res) {
       const inputTokenQuote = await swapQuoteByInputToken(
         whirlpool,
         reversed_pools.includes(pool)
-          ? whirlpoolData.tokenMintB
-          : whirlpoolData.tokenMintA,
-        new u64(amount * weighting[pool]),
+          ? whirlpoolData.tokenMintA
+          : whirlpoolData.tokenMintB,
+        new BN(amount * weighting[pool]),
         Percentage.fromFraction(1, 1000), // 0.1%
         ctx.program.programId,
         fetcher,
@@ -184,6 +188,7 @@ router.post("/withdraw", async function (req, res) {
       console.log(pool, txId);
     }
   } catch (e) {
+    console.log(e);
     return res.status(500).json(e);
   }
 
