@@ -3,12 +3,16 @@ import { Transition, Menu, Dialog } from "@headlessui/react";
 import Modal from 'react-modal'
 import "./SwapBox.css"
 import classNames from 'classnames';
-import { Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import * as token from "@solana/spl-token";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import axios from 'axios';
-
+import { AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import TokenDropdown from "./TokenDropdown";
-import TokenSet from "./TokenSet";
+import * as anchor from "@project-serum/anchor";
+
+const data = [{ v: 0, date: "1/22" }, { v: 0.5, date: "2/22" }, { v: 3, date: "3/22" }, { v: 5, date: "4/22" }, { v: 8, date: "5/22" }, { v: 7, date: "6/22" }, { v: 10, date: "7/22" }, { v: 20, date: "8/22" }, { v: 13, date: "9/22" }, { v: 15, date: "10/22" }, { v: 18, date: "11/22" }, { v: 25, date: "12/22" }, { v: 24, date: "1/23" }, { v: 30, date: "2/23" }, { v: 35, date: "3/23" }]
+
 
 Modal.setAppElement('#root');
 
@@ -29,10 +33,16 @@ const SwapBox = () => {
   const [openSwapDialog, setSwapOpenDialog] = useState(false);
   const [openDepositDialog, setDepositOpenDialog] = useState(false);
   const [openWithdrawDialog, setWithdrawOpenDialog] = useState(false);
+  const [transactionHash, setTransactionHash] = useState("");
+  const [swapInProgress, setSwapInProgress] = useState(false);
+  const [withdrawInProgress, setWithdrawInProgress] = useState(false);
+  const [selectStash, setSelectStash] = useState(1);
+
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
 
-  const depositAPIURL = "/http://localhost:4000/swap/deposit"
+  const depositAPIURL = "http://localhost:4000/swap/deposit"
+  const withdrawAPIURL = "http://localhost:4000/swap/withdraw"
 
   const handleFromTokenChange = (value) => {
     setFromToken(value);
@@ -54,77 +64,121 @@ const SwapBox = () => {
         lamports: amount,
       })
     );
-    await sendTransaction(transaction, connection);
+    let response = await sendTransaction(transaction, connection);
+    return response
   }
+
+  const programId = new PublicKey("5s99BZLgkTKj2HWZcx8mnBPRzv7Tu42aJZHmahpAzQ1v")
+  const [mint] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("mint")],
+    programId
+  );
+
+  async function withdrawSTH(amount) {
+    const tokenAccount = await token.getAssociatedTokenAddress(
+      mint,
+      publicKey,
+    );
+    const transaction = new Transaction().add(
+      token.createBurnInstruction(
+        tokenAccount,
+        mint,
+        publicKey,
+        amount
+      ))
+    let response = await sendTransaction(transaction, connection);
+    return response
+  }
+
 
   return (
     <>
-
       <div className="main-page-container">
         <div className="solstash-container">
           <span className="token-swap_title">Choose a SolStash™</span>
-          <div className="solstash-box solstash-box--selected">
-            <StashEntry name="Radium" portion="10%" color="red" />
-            <StashEntry name="Serum" portion="10%" color="red" />
-            <StashEntry name="Binafida" portion="10%" color="red" />
-            <StashEntry name="Solend" portion="10%" color="red" />
-            <StashEntry name="GMT" portion="4%" color="red" />
-            <StashEntry name="Audius" portion="4%" color="red" />
-            <StashEntry name="Star Atlas DAO" portion="4%" color="red" />
-            <StashEntry name="Star Atlas" portion="4%" color="red" />
-            <StashEntry name="Aurory" portion="4%" color="red" />
+
+          <div onClick={() => setSelectStash(1)} className={`solstash-box ${selectStash == 1 ? 'solstash-box--selected' : ''}`}>
+            <StashEntry name="Radium" portion="25%" color="red" />
+            <StashEntry name="Serum" portion="25%" color="green" />
+            <StashEntry name="Bonafida" portion="25%" color="lightgreen" />
+            <StashEntry name="Solend" portion="25%" color="brown" />
           </div>
 
-          <div className="solstash-box">
+          <div onClick={() => setSelectStash(2)} className={`solstash-box ${selectStash == 2 ? 'solstash-box--selected' : ''}`}>
             <StashEntry name="Radium" portion="20%" color="red" />
-            <StashEntry name="Serum" portion="20%" color="red" />
-            <StashEntry name="Binafida" portion="20%" color="red" />
-            <StashEntry name="Solend" portion="20%" color="red" />
+            <StashEntry name="Serum" portion="20%" color="lime" />
+            <StashEntry name="Bonafida" portion="20%" color="lightgreen" />
+            <StashEntry name="Solend" portion="20%" color="lightgray" />
+            <StashEntry name="GMT" portion="4%" color="pink" />
+            <StashEntry name="Audius" portion="4%" color="orange" />
+            <StashEntry name="Star Atlas DAO" portion="4%" color="yellow" />
+            <StashEntry name="Star Atlas" portion="4%" color="purple" />
+            <StashEntry name="Aurory" portion="4%" color="red" />
           </div>
         </div>
 
-        <div className="swap-graph-container">
+        <div>
           <div className="swap-container">
             <div className="swap-box">
               <span className="token-swap_title">Amount to Swap</span>
-              <TokenDropdown options={true} value={fromToken} setValue={handleFromTokenChange} />
-                    {/* <span className="token-swap_label">SolStash™ Composition</span>
-              <TokenSet options={fromTokenOptions} value={toToken} setValue={handleToTokenChange} /> */}
-              <div className="button-container">
-                <button
-                  className="token-swap-button hover:bg-green-700 rounded-lg text-white py-2 px-8"
-                  onClick={() => {
-                    setSwapOpenDialog(true);
-                  }}
-                >
-                  Invest
-                </button>
-              </div>
+              <TokenDropdown
+                options={true}
+                value={fromToken}
+                setValue={handleFromTokenChange}
+                buttonName="Swap"
+                buttonAction={() => setSwapOpenDialog(true)} />
             </div>
 
             <div className="swap-box">
               <span className="token-swap_title">Amount to Withdraw</span>
-              <TokenDropdown options={false} value={toToken} setValue={handleToTokenChange} />
-                    {/* <span className="token-swap_label">SolStash™ Composition</span>
-              <TokenSet options={fromTokenOptions} value={fromToken} setValue={handleFromTokenChange} /> */}
-              <div className="button-container">
-                <button
-                  className="token-swap-button hover:bg-green-700 rounded-lg text-white py-2 px-8"
-                  onClick={() => {
-                    setWithdrawOpenDialog(true);
-                  }}
-                >
-                  Withdraw
-                </button>
-              </div>
+              <TokenDropdown
+                options={false}
+                value={toToken}
+                setValue={handleToTokenChange}
+                buttonName="Withdraw"
+                buttonAction={() => setWithdrawOpenDialog(true)} />
             </div>
           </div>
-          <div className = "token-swap-container">
-            <span className="graph-title">Total Value Invested: $35 M</span>
+          <div className="graph-box">
+            <span className="token-swap_title">Total Value Invested: $35M</span>
+            <div className="token-swap-container">
+              <AreaChart width={800} height={200} data={data}>
+                <defs>
+                  <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#7c3aed" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+
+                <Area type="monotone" dataKey="v" stroke="rgba(124, 58, 237)" fill="url(#colorUv)" strokeWidth={3} />
+              </AreaChart>
+              <div className="chart-datapoints">
+                <span>Cur Cost per Token</span>
+                <span>18.53 STH</span>
+
+                <span>Avg Cost per Token</span>
+                <span>14.54 STH</span>
+
+                <span>Min Cost per SOL</span>
+                <span>12.97 STH</span>
+
+                <span>Peak Cost per SOL</span>
+                <span>18.53 STH</span>
+
+                <span>Volume</span>
+                <span>28K</span>
+
+                <span>Peak Cost per SOL</span>
+                <span>18.53 STH</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+
+
+      {/* modal code */}
       <Transition appear show={openSwapDialog} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setSwapOpenDialog(false)}>
           <Transition.Child
@@ -162,7 +216,7 @@ const SwapBox = () => {
                       Estimated Changes
                     </p>
                     <p className="text-sm text-green-500">
-                      Receive: 0.01 SOL, 0.01 USDC, 0.01 SRM
+                      Receive: {+fromToken} STH
                     </p>
                     <p className="text-sm text-red-500">
                       Send: {+fromToken} SOL
@@ -178,18 +232,28 @@ const SwapBox = () => {
                       type="button"
                       className="rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       onClick={async () => {
-                        // let response = await sendSol(+fromToken * LAMPORTS_PER_SOL)
-                        // console.log(response)
+                        setSwapInProgress(true)
+                        let response = await sendSol(+fromToken * LAMPORTS_PER_SOL)
+                        console.log(response)
+                        setTransactionHash(response)
+                        response = await axios.post(depositAPIURL, {
+                          "address": publicKey,
+                          "amount": +fromToken * LAMPORTS_PER_SOL,
+                        })
+                        console.log(response.data);
                         setSwapOpenDialog(false);
                         setDepositOpenDialog(true);
+                        setSwapInProgress(false)
                       }}
+                      disabled={swapInProgress}
                     >
-                      Swap
+                      {!swapInProgress ? "Swap" : "Processing..."}
                     </button>
                     <button
                       type="button"
                       className="rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       onClick={() => setSwapOpenDialog(false)}
+                      hidden={swapInProgress}
                     >
                       Cancel
                     </button>
@@ -231,18 +295,14 @@ const SwapBox = () => {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Deposit Tokens
+                    Swap Successful!
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Estimated Changes
+                      See Transaction Here:
                     </p>
                     <p className="text-sm text-green-500">
-                      Deposit: 0.01 SOL, 0.01 USDC, 0.01 SRM
-                    </p>
-                    <br></br>
-                    <p className="text-sm text-gray-500">
-                      Network Fee: $0.00012
+                      <a href={`https://explorer.solana.com/tx/${transactionHash}?cluster=devnet`} target="_blank" > Solana Explorer </a>
                     </p>
                   </div>
 
@@ -250,23 +310,9 @@ const SwapBox = () => {
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={async () => {
-                        // let response = await axios.post(depositAPIURL, {
-                        //   "address": publicKey,
-                        //   "amount": +fromToken * LAMPORTS_PER_SOL,
-                        // })
-                        // console.log(response.data);
-                        setDepositOpenDialog(false);
-                      }}
-                    >
-                      Deposit
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       onClick={() => setDepositOpenDialog(false)}
                     >
-                      Cancel
+                      Close
                     </button>
                   </div>
                 </Dialog.Panel>
@@ -277,7 +323,10 @@ const SwapBox = () => {
       </Transition>
 
       <Transition appear show={openWithdrawDialog} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setWithdrawOpenDialog(false)}>
+        <Dialog as="div" className="relative z-10" onClose={() => {
+          setWithdrawOpenDialog(false)
+          setWithdrawInProgress(false)
+        }}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -302,44 +351,75 @@ const SwapBox = () => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title
+                  {!withdrawInProgress ? (
+                    <>
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-gray-900"
+                      >
+                        Confirm Transaction Details
+                      </Dialog.Title>
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                          Estimated Changes
+                        </p>
+                        <p className="text-sm text-green-500">
+                          Receive: {+toToken} SOL
+                        </p>
+                        <p className="text-sm text-red-500">
+                          Send: {+toToken} STH
+                        </p>
+                        <br></br>
+                        <p className="text-sm text-gray-500">
+                          Network Fee: $0.00012
+                        </p>
+                      </div>
+                    </>) : (
+                    <>
+                      <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Confirm Transaction Details
+                    Withdraw Successful!
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Estimated Changes
+                      See Transaction Here:
                     </p>
                     <p className="text-sm text-green-500">
-                      Receive: 1 SOL
+                      <a href={`https://explorer.solana.com/tx/${transactionHash}?cluster=devnet`} target="_blank" > Solana Explorer </a>
                     </p>
-                    <p className="text-sm text-red-500">
-                      Send: {+toToken} STH
-                    </p>
-                    <br></br>
-                    <p className="text-sm text-gray-500">
-                      Network Fee: $0.00012
-                    </p>
-                  </div>
+                  </div></>)}
 
                   <div className="mt-4 modal-button-container">
                     <button
                       type="button"
                       className="rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={() => {
+                      onClick={async () => {
+                        setWithdrawInProgress(true);
+                        let amount = Number(+toToken) * 1e9;
+                        console.log("Amount: " + amount)
+                        let response = await withdrawSTH(amount);
+                        console.log(response)
+                        setTransactionHash(response);
+                        response = await axios.post(withdrawAPIURL, {
+                          "address": publicKey,
+                          "amount": amount,
+                        })
+                        console.log(response.data);
                         setWithdrawOpenDialog(false);
                       }}
+                      disabled={withdrawInProgress}
                     >
-                      Withdraw
+                      {!withdrawInProgress ? "Withdraw" : "Processing..."}
                     </button>
                     <button
                       type="button"
                       className="rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       onClick={() => setWithdrawOpenDialog(false)}
+                      hidden={withdrawInProgress}
                     >
-                      Cancel
+                      Close
                     </button>
                   </div>
                 </Dialog.Panel>

@@ -1,27 +1,49 @@
 .main-page-container {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: start;
   justify-content: center;
   width: 100%;
 }
 
 .swap-container {
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
 }
 
-.swap-graph-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.graph-box {
+  margin-top: 1.5rem;
 }
 
+.chart-datapoints {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  grid-row-gap: 8px;
+  grid-column-gap: 8px;
+  grid-auto-flow: row;
+  font-size: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 1rem;
+}
+
+.chart-datapoints > *:nth-child(odd) {
+  text-align: right;
+  color: rgb(156 163 175);
+}
+
+.chart-datapoints > *:nth-child(even) {
+  text-align: left;
+  color: white;
+  font-weight: 500;
+}
+
+
 .token-swap-container {
-  margin: 1rem;
   display: inline-block;
   max-width: 100%;
 
@@ -58,7 +80,7 @@
 }
 
 .solstash-box.solstash-box--selected {
-  border: 2px solid rgba(124, 58, 237);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237);
   background-image: linear-gradient(
     rgba(124, 58, 237, 0.1),
     rgba(124, 58, 237, 0.1)), linear-gradient(
@@ -205,12 +227,6 @@ div+.token-swap_label {
 .token-amount:focus {
   outline: none;
   border-bottom: 1px solid #50c878;
-}
-
-.token-label {
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: #FFF;
 }
 
 .token-swap-price {

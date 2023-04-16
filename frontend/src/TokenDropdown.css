@@ -1,15 +1,13 @@
 .token-dropdown {
-    display: grid;
-    grid-template-columns: 150px 130px;
-    grid-column-gap: 32px;
-    align-items: end;
-    max-width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 
     box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.0);
     background: #1C1C1C;
 
     border-radius: 8px;
-    padding: 8px 0;
+    padding: 12px 0;
 
     transition: 0.25s all ease-in;
 }
@@ -39,7 +37,7 @@
   justify-content: flex-start;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: rgb(243 244 246);
 
   font-weight: 500;
@@ -51,13 +49,18 @@
     border: none;
     color: #FFF;
     outline: none;
-    font-size: 3rem;
+    font-size: 2rem;
     text-align: left;
     font-family: Menlo, monospace;
     font-weight: 400;
 
-    padding-left: 12px;
+    margin-left: 16px;
     line-height: 1;
+    width: 110px;
+}
+
+.token-dropdown_est {
+  margin: 0 12px;
 }
 
 .token-dropdown_amount::placeholder {
@@ -72,14 +75,42 @@
 .token-dropdown_stack_bottom {
   text-overflow: ellipsis;
   overflow: hidden;
-  font-size: 1rem;
+  font-size: 0.8rem;
+  line-height: 1.2;
   color: rgb(75 85 99);
+}
+
+.token-dropdown_curr {
+  flex: 0 0 auto;
+  margin-left: 24px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
 }
 
 .token-dropdown_left {
   text-align: left;
-  padding-left: 12px;
 }
 .token-dropdown_right {
   text-align: left;
+}
+
+.token-send {
+  color: #FFF;
+  background-color: rgba(124, 58, 237);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  margin-right: 1rem;
+  font-weight: 500;
+}
+
+.token-send svg {
+  margin-right: 8px;
+  height: 0.8rem;
+  width: 0.8rem;
 }
