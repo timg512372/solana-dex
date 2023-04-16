@@ -3,47 +3,57 @@ use anchor_lang::prelude::*;
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
 #[program]
-pub mod aggregator {
-    // send orders with the best ratio / execution price to exchanges 
+pub mod SolStash {
     use super::*;
+    pub mut composition: HashMap<Pubkey, i32>; // composition of tokens
+    pub mut total_amt: int; // ownership of tokens
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+    pub fn initialize(ctx: Context<Initialize>, _composition: HashMap<Pubkey, i32>) -> Result<()> {
+        composition = _composition; 
+
         Ok(())
     }
 
-    pub fn set_data(ctx: Context<SetData>, data: u64) -> Result<()> {
-        let user = &mut ctx.accounts.user;
-        user.data = data;
-        
-        Ok(())
-    }
-
-    pub fn single_exchange_route(ctx: Context<SingleExchangeRoute>, exchange: Pubkey, token_a: Pubkey, token_b: Pubkey, amount: u64) -> Result<()> {
+    pub fn mint(ctx: Context<Mint>, origin_token: PubKey, amount: u64) -> Result<()> {
         let user = &mut ctx.accounts.user;
         let user_balance = user.amount; 
         require!(amount <= user_balance, ErrorCode::NotEnoughBalance); // ensure enough balance 
 
-        user.data = amount;
-        let exchange_addr = Pubkey::from_str(exchange).unwrap();
+        // swap origin_token into tokens in composition based on weights
+        let tx_amt = amount * originprice / totalprice; // get price of current basket
+        composition.map(|token, weight| {
+            // swap origin_token into token based on weight
+            if (origin_token != token) {
+                let exchange_addr = find_exchange_account(&token);
+                let exchange = &mut ctx.accounts.exchange;
+                exchange.swap(origin_token, token, amount * weight);
+            }
+        });
 
-        let test1 = find_metadata_account(&exchange_addr);
-        println!("metadata_account => {:?}", exchange_addr);
-
-        let test2 = find_master_edition_account(&exchange_addr);
-        println!("master_edition => {:?}", exchange_addr);
-
+        // mint corresponding token to user
+        token.mint(user, token_amt);
 
         Ok(())
     }
 
-    pub fn multi_exchange_route(ctx: Context<MultiExchangeRoute>, exchanges: &[Pubkey; 2], token_a: Pubkey, token_b: Pubkey, amount: u64) -> Result<()> {
+    pub fn redeem(ctx: Context<redeem>, target_token: PubKey, amount: u64) -> Result<()> {
         let user = &mut ctx.accounts.user;
         let user_balance = user.amount; 
         require!(amount <= user_balance, ErrorCode::NotEnoughBalance); // ensure enough balance 
-        
-        user.data = amount;
-        let exchange_addr = Pubkey::from_str(exchanges[0].unwrap()).unwrap();
-        let exchange_addr2 = Pubkey::from_str(exchanges[1].unwrap()).unwrap();
+
+        // swap tokens in composition into target_token based on weights
+        let tx_amt = amount * originprice / totalprice; // get price of current basket
+        composition.map(|token, weight| {
+            // swap token into target_token based on weight
+            if (target_token != token) {
+                let exchange_addr = find_exchange_account(&token);
+                let exchange = &mut ctx.accounts.exchange;
+                exchange.swap(token, target_token, amount * weight);
+            }
+        });
+
+        // burn corresponding token from user
+        token.burn(user, token_amt);
 
         Ok(())
     }
