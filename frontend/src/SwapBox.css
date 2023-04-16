@@ -1,25 +1,47 @@
+
 .token-swap-container {
   margin: 0 auto;
-  width: 30rem;
+  display: inline-block;
   max-width: 100%;
 
-  background: #1a1a1a;
+  background: rgb(24 24 27);
 
   /* background-image: url(https://products.ls.graphics/mesh-gradients/images/16.-Medium-Purple_1.jpg); */
   /* background-size: cover; */
-  border-radius: 1.5rem;
-  padding: 3rem;
+  border-radius: 8px;
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  padding: 16px;
 }
 
-.token-swap {
-  /* background-color: #1f2430; */
-  border-radius: 1.5rem;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.token-swap_label:first-of-type {
+  position: relative;
+}
+
+.token-swap_label:first-of-type::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 8px;
+  right: 8px;
+  display: block;
+  height: 1px;
+  background: rgb(124 58 237);
+}
+
+div + .token-swap_label {
+  margin-top: 1.5rem;
+}
+
+.token-swap_label {
+  display: block;
+  text-align: left;
+
+  font-weight: 400;
+  color: rgb(148 163 184);
+  padding-left: 12px;
+  margin-bottom: 4px;
+  font-size: 1rem;
 }
 
 .token-swap-selection {
@@ -109,6 +131,7 @@
 
 .token-swap-button {
   margin-top: 2rem;
+  background-color: blue;
 }
 
 .token-menu {
@@ -151,4 +174,13 @@
 .token-menu-divider {
   border-top: 1px solid #4d576b;
   margin: 0.5rem 0;
+}
+
+.modal-button-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 50%;
+  margin: 0 auto;
 }
