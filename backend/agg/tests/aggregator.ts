@@ -22,7 +22,7 @@ describe("aggregator", () => {
     console.log("Your transaction signature", tx);
   });
 
-  it("Mints", async () => {
+  it("Deposits", async () => {
     const tokenAccount = await getAssociatedTokenAddress(
       mint,
       provider.wallet.publicKey
@@ -39,7 +39,24 @@ describe("aggregator", () => {
     expect(Number(userAta.amount)).to.equal((10 * 10) ^ 6);
   });
 
-  it("Burnsss", async () => {
+  it("Deposits", async () => {
+    const tokenAccount = await getAssociatedTokenAddress(
+      mint,
+      provider.wallet.publicKey
+    );
+
+    const tx = await program.methods
+      .mint(new BN((10 * 10) ^ 6))
+      .accounts({
+        tokenAccount: tokenAccount,
+      })
+      .rpc();
+
+    const userAta = await getAccount(provider.connection, tokenAccount);
+    expect(Number(userAta.amount)).to.equal((10 * 10) ^ 6);
+  });
+
+  it("Withdraws", async () => {
     const tokenAccount = await getAssociatedTokenAddress(
       mint,
       provider.wallet.publicKey

@@ -2,8 +2,15 @@ require("dotenv").config();
 import express from "express";
 import * as anchor from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
+import {
+  getAssociatedTokenAddress,
+  getOrCreateAssociatedTokenAccount,
+  transfer,
+} from "../../node_modules/@solana/spl-token";
 import { u64 } from "@solana/spl-token";
 import { AddressUtil, Percentage, ZERO } from "@orca-so/common-sdk";
+import idl from "../aggregator.json";
+import { BN } from "bn.js";
 
 import {
   buildWhirlpoolClient,
@@ -27,6 +34,17 @@ const provider = new anchor.AnchorProvider(connection, wallet, {
   preflightCommitment: "max",
   skipPreflight: false,
 });
+anchor.setProvider(provider);
+
+const programId = new PublicKey("5s99BZLgkTKj2HWZcx8mnBPRzv7Tu42aJZHmahpAzQ1v");
+const program = new anchor.Program(idl as anchor.Idl, programId);
+
+const [mint] = anchor.web3.PublicKey.findProgramAddressSync(
+  [Buffer.from("mint")],
+  program.programId
+);
+
+console.log(provider);
 
 const pools: any = {
   sol_usdc: new PublicKey("3KBZiL2g8C7tiJ32hTv5v3KM7aK9htpqTw4cTXz1HvPt"),
@@ -55,42 +73,70 @@ router.post("/deposit", async function (req, res) {
     });
   }
 
-  const whirlpool_devnet_id = new PublicKey(
-    "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
+  // const whirlpool_devnet_id = new PublicKey(
+  //   "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
+  // );
+
+  // const ctx = WhirlpoolContext.withProvider(provider, whirlpool_devnet_id);
+
+  // const whirlpoolClient = buildWhirlpoolClient(ctx);
+
+  // try {
+  //   for (const pool of Object.keys(pools)) {
+  //     const whirlpool = await whirlpoolClient.getPool(pools[pool], true);
+
+  //     const whirlpoolData = await whirlpool.refreshData();
+  //     const fetcher = ctx.fetcher;
+
+  //     const inputTokenQuote = await swapQuoteByInputToken(
+  //       whirlpool,
+  //       reversed_pools.includes(pool)
+  //         ? whirlpoolData.tokenMintB
+  //         : whirlpoolData.tokenMintA,
+  //       new u64(amount * weighting[pool]),
+  //       Percentage.fromFraction(1, 1000), // 0.1%
+  //       ctx.program.programId,
+  //       fetcher,
+  //       true
+  //     );
+
+  //     // Send out the transaction
+  //     const txId = await (
+  //       await whirlpool.swap(inputTokenQuote)
+  //     ).buildAndExecute();
+  //     console.log(pool, txId);
+  //   }
+  // } catch (e) {
+  //   return res.status(500).json(e);
+  // }
+
+  const rootAccount = await getAssociatedTokenAddress(
+    mint,
+    provider.wallet.publicKey
   );
 
-  const ctx = WhirlpoolContext.withProvider(provider, whirlpool_devnet_id);
+  const tokenAccount = await getOrCreateAssociatedTokenAccount(
+    connection,
+    anchor.Wallet.local().payer,
+    mint,
+    new PublicKey(address)
+  );
 
-  const whirlpoolClient = buildWhirlpoolClient(ctx);
+  const tx = await program.methods
+    .mint(new BN(amount))
+    .accounts({
+      tokenAccount: rootAccount,
+    })
+    .rpc();
 
-  try {
-    for (const pool of Object.keys(pools)) {
-      const whirlpool = await whirlpoolClient.getPool(pools[pool], true);
-
-      const whirlpoolData = await whirlpool.refreshData();
-      const fetcher = ctx.fetcher;
-
-      const inputTokenQuote = await swapQuoteByInputToken(
-        whirlpool,
-        reversed_pools.includes(pool)
-          ? whirlpoolData.tokenMintB
-          : whirlpoolData.tokenMintA,
-        new u64(amount * weighting[pool]),
-        Percentage.fromFraction(1, 1000), // 0.1%
-        ctx.program.programId,
-        fetcher,
-        true
-      );
-
-      // Send out the transaction
-      const txId = await (
-        await whirlpool.swap(inputTokenQuote)
-      ).buildAndExecute();
-      console.log(pool, txId);
-    }
-  } catch (e) {
-    return res.status(500).json(e);
-  }
+  await transfer(
+    connection,
+    anchor.Wallet.local().payer,
+    rootAccount,
+    tokenAccount.address,
+    anchor.Wallet.local().payer,
+    amount
+  );
 
   return res.status(200).json("Success");
 });
