@@ -1,0 +1,14 @@
+.token-dropdown {
+    display: flex;
+    background: rgb(55 65 81);
+}
+
+.token-dropdown_amount {
+    color: red;
+    
+}
+
+.token-dropdown_amount::placeholder {
+    color: rgb(156 163 175);
+    color: red;
+}

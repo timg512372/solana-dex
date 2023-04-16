@@ -1,0 +1,154 @@
+.token-swap-container {
+  margin: 0 auto;
+  width: 30rem;
+  max-width: 100%;
+
+  background: #1a1a1a;
+
+  /* background-image: url(https://products.ls.graphics/mesh-gradients/images/16.-Medium-Purple_1.jpg); */
+  /* background-size: cover; */
+  border-radius: 1.5rem;
+  padding: 3rem;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.token-swap {
+  /* background-color: #1f2430; */
+  border-radius: 1.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.token-swap-selection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.token-swap-selection-box {
+  display: flex;
+  align-items: center;
+}
+
+.token-select-container {
+  position: relative;
+  padding: 0.5rem;
+}
+
+.token-select {
+  display: flex;
+  align-items: center;
+  background-color: #2e3544;
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.token-select:hover {
+  background-color: #3e465b;
+}
+
+.token-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.token-amount-container {
+  margin-left: 1.5rem;
+}
+
+.token-amount {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid #7d879c;
+  color: #fff;
+  width: 6rem;
+  font-size: 1.125rem;
+  padding: 0.5rem 0.25rem;
+  margin-right: 0.5rem;
+  caret-color: #50c878;
+}
+
+.token-amount:focus {
+  outline: none;
+  border-bottom: 1px solid #50c878;
+}
+
+.token-label {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #FFF;
+}
+
+.token-swap-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.token-price-label {
+  font-size: 1.125rem;
+  color: #7d879c;
+  margin-right: 0.5rem;
+}
+
+.token-price-value {
+  font-size: 1.125rem;
+  color: #fff;
+}
+
+.token-swap-button {
+  margin-top: 2rem;
+}
+
+.token-menu {
+  background-color: #1e2533;
+  border-radius: 0.5rem;
+  color: #fff;
+  padding: 1rem;
+  overflow-y: auto;
+  z-index: 10;
+  position: absolute;
+  top: 4rem;
+  width: 10rem;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+}
+
+.token-menu-item {
+  height: 3rem;
+  width: 3rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  padding: 0 1rem;
+}
+
+.token-menu-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.token-menu-item:hover {
+  background-color: #3e465b;
+}
+
+.token-menu-item-active {
+  background-color: #3e465b;
+}
+
+.token-menu-divider {
+  border-top: 1px solid #4d576b;
+  margin: 0.5rem 0;
+}
