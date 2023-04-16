@@ -79,8 +79,8 @@ const TokenDropdown = ({ options, value: enteredValue, setValue: setEnteredValue
       <div className="token-dropdown_button">
         <img
           className="token-menu-icon"
-          src={`/tokens/SOL.png`}
-          alt={`SOL icon`}
+          src={`/tokens/STH.png`}
+          alt={`STH icon`}
         />
         <span>STH</span>
       </div>

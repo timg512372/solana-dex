@@ -5,11 +5,9 @@
   text-align: center;
 }
 
-.app-title {
-  font-size: 3rem;
-  font-weight: 700;
-  line-height: 1.1;
-  color: white;
+
+.big-title {
+  margin-top: 10rem;
 }
 
 .title-header {
@@ -20,10 +18,24 @@
   margin: 1rem 0 2.5rem 0;
 }
 
-.temp-center {
-  margin-top: 10rem;
+.title-header h1{
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: white;
+}
+
+.title-header img{
+  width: 50%;
 }
 
 .temp-animation {
-  transition: all 0.85s ease;
+  transition: all 0.85s ease; 
+}
+
+.tab-container { 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%
 }

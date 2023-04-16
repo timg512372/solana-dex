@@ -1,9 +1,31 @@
+.main-page-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.swap-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.swap-graph-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .token-swap-container {
   margin: 1rem;
   display: inline-block;
   max-width: 100%;
 
-  background: rgb(24 24 27);
+  background: #151515;
 
   /* background-image: url(https://products.ls.graphics/mesh-gradients/images/16.-Medium-Purple_1.jpg); */
   /* background-size: cover; */
@@ -11,6 +33,86 @@
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.solstash-container {
+  width: 200px;
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+.solstash-box {
+  border-radius: 8px;
+  width: 100%;
+  background: #0E0E0E;
+  padding: 4px 0;
+  margin-bottom: 1rem;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.solstash-box.solstash-box--selected {
+  border: 2px solid rgba(124, 58, 237);
+  background-image: linear-gradient(
+    rgba(124, 58, 237, 0.1),
+    rgba(124, 58, 237, 0.1)), linear-gradient(
+    #0E0E0E, #0E0E0E);
+}
+
+.stash-entry {
+  display: block;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.stash-entry-name {
+  flex: 1;
+  color: rgb(156 163 175);
+}
+
+.stash-entry-pos {
+  color: #FFF;
+}
+
+.stash-entry-bar {
+  display: inline-block;
+  width: 3px;
+  border-radius: 1.5px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.swap-box {
+  margin-right: 1rem;
+}
+
+.token-swap_title {
+  color: rgb(209 213 219);
+  display: block;
+  text-align: left;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin-bottom: 0.8rem;
+}
+
+.graph-title {
+  color: rgb(209 213 219);
+  display: block;
+  text-align: left;
+  font-size: 2rem;
+  line-height: 1.4;
+  margin-bottom: 0.8rem;
 }
 
 .token-swap_label:first-of-type {
@@ -190,4 +292,5 @@ div+.token-swap_label {
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
+  margin-top: 10px;
 }

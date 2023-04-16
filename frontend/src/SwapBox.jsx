@@ -11,6 +11,15 @@ import TokenDropdown from "./TokenDropdown";
 import TokenSet from "./TokenSet";
 
 Modal.setAppElement('#root');
+
+const StashEntry = ({ name, portion, color }) => (
+  <div className="stash-entry">
+    <span className="stash-entry-bar" style={{ backgroundColor: color }}></span>
+    <span className="stash-entry-name">{name}</span>
+    <span className="stash-entry-pos">{portion}</span>
+  </div>
+);
+
 /**
  * triggerSwap: ([token1, token2, token1qty])
  */
@@ -50,37 +59,69 @@ const SwapBox = () => {
 
   return (
     <>
-      <div className="token-swap-container">
-        <span className="token-swap_label">Amount to Swap</span>
-        <TokenDropdown options={true} value={fromToken} setValue={handleFromTokenChange} />
-        <span className="token-swap_label">SolStash™ Composition</span>
-        <TokenSet options={fromTokenOptions} value={toToken} setValue={handleToTokenChange} />
-        <div className="button-container">
-          <button
-            className="token-swap-button hover:bg-green-700 rounded-lg text-white py-2 px-8"
-            onClick={() => {
-              setSwapOpenDialog(true);
-            }}
-          >
-            Invest
-          </button>
-        </div>
-      </div>
 
-      <div className="token-swap-container">
-        <span className="token-swap_label">Amount to Withdraw</span>
-        <TokenDropdown options={false} value={toToken} setValue={handleToTokenChange} />
-        <span className="token-swap_label">SolStash™ Composition</span>
-        <TokenSet options={fromTokenOptions} value={fromToken} setValue={handleFromTokenChange} />
-        <div className="button-container">
-          <button
-            className="token-swap-button hover:bg-green-700 rounded-lg text-white py-2 px-8"
-            onClick={() => {
-              setWithdrawOpenDialog(true);
-            }}
-          >
-            Withdraw
-          </button>
+      <div className="main-page-container">
+        <div className="solstash-container">
+          <span className="token-swap_title">Choose a SolStash™</span>
+          <div className="solstash-box solstash-box--selected">
+            <StashEntry name="Radium" portion="10%" color="red" />
+            <StashEntry name="Serum" portion="10%" color="red" />
+            <StashEntry name="Binafida" portion="10%" color="red" />
+            <StashEntry name="Solend" portion="10%" color="red" />
+            <StashEntry name="GMT" portion="4%" color="red" />
+            <StashEntry name="Audius" portion="4%" color="red" />
+            <StashEntry name="Star Atlas DAO" portion="4%" color="red" />
+            <StashEntry name="Star Atlas" portion="4%" color="red" />
+            <StashEntry name="Aurory" portion="4%" color="red" />
+          </div>
+
+          <div className="solstash-box">
+            <StashEntry name="Radium" portion="20%" color="red" />
+            <StashEntry name="Serum" portion="20%" color="red" />
+            <StashEntry name="Binafida" portion="20%" color="red" />
+            <StashEntry name="Solend" portion="20%" color="red" />
+          </div>
+        </div>
+
+        <div className="swap-graph-container">
+          <div className="swap-container">
+            <div className="swap-box">
+              <span className="token-swap_title">Amount to Swap</span>
+              <TokenDropdown options={true} value={fromToken} setValue={handleFromTokenChange} />
+                    {/* <span className="token-swap_label">SolStash™ Composition</span>
+              <TokenSet options={fromTokenOptions} value={toToken} setValue={handleToTokenChange} /> */}
+              <div className="button-container">
+                <button
+                  className="token-swap-button hover:bg-green-700 rounded-lg text-white py-2 px-8"
+                  onClick={() => {
+                    setSwapOpenDialog(true);
+                  }}
+                >
+                  Invest
+                </button>
+              </div>
+            </div>
+
+            <div className="swap-box">
+              <span className="token-swap_title">Amount to Withdraw</span>
+              <TokenDropdown options={false} value={toToken} setValue={handleToTokenChange} />
+                    {/* <span className="token-swap_label">SolStash™ Composition</span>
+              <TokenSet options={fromTokenOptions} value={fromToken} setValue={handleFromTokenChange} /> */}
+              <div className="button-container">
+                <button
+                  className="token-swap-button hover:bg-green-700 rounded-lg text-white py-2 px-8"
+                  onClick={() => {
+                    setWithdrawOpenDialog(true);
+                  }}
+                >
+                  Withdraw
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className = "token-swap-container">
+            <span className="graph-title">Total Value Invested: $35 M</span>
+          </div>
         </div>
       </div>
 
