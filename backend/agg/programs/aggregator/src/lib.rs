@@ -1,66 +1,79 @@
 use anchor_lang::prelude::*;
+use anchor_spl::{
+    token,
+    token::{Token, Burn, MintTo, mint_to},
+};
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
 #[program]
-pub mod SolStash {
+pub mod test {
     use super::*;
-    pub mut composition: HashMap<Pubkey, i32>; // composition of tokens
-    pub mut total_amt: int; // ownership of tokens
 
-    pub fn initialize(ctx: Context<Initialize>, _composition: HashMap<Pubkey, i32>) -> Result<()> {
-        composition = _composition; 
-
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        
         Ok(())
     }
 
-    pub fn mint(ctx: Context<Mint>, origin_token: PubKey, amount: u64) -> Result<()> {
-        let user = &mut ctx.accounts.user;
-        let user_balance = user.amount; 
-        require!(amount <= user_balance, ErrorCode::NotEnoughBalance); // ensure enough balance 
+    pub fn mint(ctx: Context<Mint>, amount: u64) -> Result<()> {
+        // let user = &mut ctx.accounts.user;
 
-        // swap origin_token into tokens in composition based on weights
-        let tx_amt = amount * originprice / totalprice; // get price of current basket
-        composition.map(|token, weight| {
-            // swap origin_token into token based on weight
-            if (origin_token != token) {
-                let exchange_addr = find_exchange_account(&token);
-                let exchange = &mut ctx.accounts.exchange;
-                exchange.swap(origin_token, token, amount * weight);
-            }
-        });
+        let cpi_accounts = MintTo {
+            mint: ctx.accounts.mint.to_account_info(),
+            to: ctx.accounts.token_account.to_account_info(),
+            authority: ctx.accounts.authority.to_account_info(),
+        };
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        // Create the CpiContext we need for the request
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
 
-        // mint corresponding token to user
-        token.mint(user, token_amt);
-
+        // Execute anchor's helper function to mint tokens
+        mint_to(cpi_ctx, amount)?;
+        
         Ok(())
     }
 
-    pub fn redeem(ctx: Context<redeem>, target_token: PubKey, amount: u64) -> Result<()> {
-        let user = &mut ctx.accounts.user;
-        let user_balance = user.amount; 
-        require!(amount <= user_balance, ErrorCode::NotEnoughBalance); // ensure enough balance 
+    pub fn redeem(ctx: Context<Redeem>, amount: u64) -> Result<()> {
+        // let user = &mut ctx.accounts.user;
 
-        // swap tokens in composition into target_token based on weights
-        let tx_amt = amount * originprice / totalprice; // get price of current basket
-        composition.map(|token, weight| {
-            // swap token into target_token based on weight
-            if (target_token != token) {
-                let exchange_addr = find_exchange_account(&token);
-                let exchange = &mut ctx.accounts.exchange;
-                exchange.swap(token, target_token, amount * weight);
-            }
-        });
+        let cpi_accounts = Burn {
+            mint: ctx.accounts.mint.to_account_info(),
+            from: ctx.accounts.from.to_account_info(),
+            authority: ctx.accounts.authority.to_account_info(),
+        };
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        // Create the CpiContext we need for the request
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
 
-        // burn corresponding token from user
-        token.burn(user, token_amt);
-
+        // Execute anchor's helper function to burn tokens
+        token::burn(cpi_ctx, amount)?;
         Ok(())
     }
 }
 
 #[derive(Accounts)]
-pub struct SetData<'info> {
+pub struct Initialize {}
+
+#[derive(Accounts)]
+pub struct Mint<'info> {
     #[account(mut)]
-    pub user: Account<'info, Data>,
+    pub mint: Account<'info, anchor_spl::token::Mint>,
+    pub token_program: Program<'info, Token>,
+    /// CHECK: This is the token account that we want to mint tokens to
+    #[account(mut)]
+    pub token_account: AccountInfo<'info>,
+    /// CHECK: the authority of the mint account
+    pub authority: Signer<'info>,  
+}
+
+#[derive(Accounts)]
+pub struct Redeem<'info> {
+    #[account(mut)]
+    pub mint: Account<'info, anchor_spl::token::Mint>,
+    pub token_program: Program<'info, Token>,
+    /// CHECK: This is the token account that we want to mint tokens to
+    #[account(mut)]
+    pub from: AccountInfo<'info>,
+    /// CHECK: the authority of the mint account
+    pub authority: Signer<'info>,
 }
