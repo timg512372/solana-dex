@@ -95,4 +95,53 @@ router.post("/deposit", async function (req, res) {
   return res.status(200).json("Success");
 });
 
+router.post("/withdraw", async function (req, res) {
+  const { address, amount } = req.body;
+
+  if (!address || !amount) {
+    return res.status(500).json({
+      error: "Missing required fields ",
+    });
+  }
+
+  const whirlpool_devnet_id = new PublicKey(
+    "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
+  );
+
+  const ctx = WhirlpoolContext.withProvider(provider, whirlpool_devnet_id);
+
+  const whirlpoolClient = buildWhirlpoolClient(ctx);
+
+  try {
+    for (const pool of Object.keys(pools)) {
+      const whirlpool = await whirlpoolClient.getPool(pools[pool], true);
+
+      const whirlpoolData = await whirlpool.refreshData();
+      const fetcher = ctx.fetcher;
+
+      const inputTokenQuote = await swapQuoteByInputToken(
+        whirlpool,
+        reversed_pools.includes(pool)
+          ? whirlpoolData.tokenMintB
+          : whirlpoolData.tokenMintA,
+        new u64(amount * weighting[pool]),
+        Percentage.fromFraction(1, 1000), // 0.1%
+        ctx.program.programId,
+        fetcher,
+        true
+      );
+
+      // Send out the transaction
+      const txId = await (
+        await whirlpool.swap(inputTokenQuote)
+      ).buildAndExecute();
+      console.log(pool, txId);
+    }
+  } catch (e) {
+    return res.status(500).json(e);
+  }
+
+  return res.status(200).json("Success");
+});
+
 module.exports = router;

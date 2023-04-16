@@ -1,18 +1,16 @@
 [features]
-seeds = false
+seeds = true
 skip-lint = false
 [programs.localnet]
 aggregator = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
 [programs.devnet]
-raydium-amm = "HWy1jotHpo6UqeQxx49dpYYdQB8wj9Qk9MdxwjLvDHB8"
-raydium-clmm = "devi51mZmdwUJGU9hjN27vEz64Gps7uUefqxg27EAtH"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "/Users/yixix/.config/solana/id.json"
+wallet = "/Users/timg/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
