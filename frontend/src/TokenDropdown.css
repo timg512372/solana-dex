@@ -5,17 +5,17 @@
     align-items: end;
     max-width: 100%;
 
-    border: 2px solid transparent;
+    box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.3);
     background: rgb(24 24 27);
 
     border-radius: 8px;
-    padding: 12px 0;
+    padding: 8px 0;
 
     transition: 0.25s all ease-in;
 }
 
 .token-dropdown-focused {
-  border-color: rgb(124 58 237);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237);
 }
 
 .token-dropdown_button img {
