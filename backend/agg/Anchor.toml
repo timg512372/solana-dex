@@ -6,6 +6,7 @@ aggregator = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
 [programs.devnet]
 raydium-amm = "HWy1jotHpo6UqeQxx49dpYYdQB8wj9Qk9MdxwjLvDHB8"
 raydium-clmm = "devi51mZmdwUJGU9hjN27vEz64Gps7uUefqxg27EAtH"
+whirlpool = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
 
 [registry]
 url = "https://api.apr.dev"
