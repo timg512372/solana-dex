@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
+import App from './App.jsx'
 import './index.css'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';

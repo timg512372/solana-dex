@@ -1,10 +1,10 @@
 import { useState, Fragment } from "react";
 import { Transition, Menu, Dialog, Listbox } from "@headlessui/react";
-import { tokenDropdown, tokenDropdownAmount } from "./TokenDropdown.module.css";
+import "./TokenDropdown.css";
 
 const TokenDropdown = ({ options, value, setValue }) => {
   return (
-    <div className={tokenDropdown}>
+    <div className="token-dropdown">
       <Listbox value={value} onChange={setValue}>
         <Listbox.Button>
           <img
@@ -32,7 +32,7 @@ const TokenDropdown = ({ options, value, setValue }) => {
 
       <div className="token-amount-container">
         <input
-          className={tokenDropdownAmount}
+          className="token-dropdown_amount"
           type="text"
           placeholder="0.00"
         />

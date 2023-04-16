@@ -1,11 +1,20 @@
 .token-dropdown {
     display: flex;
+    flex-direction: row;
+
     background: rgb(55 65 81);
+
+    border-radius: 3px;
 }
 
 .token-dropdown_amount {
-    color: red;
-    
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #FFF;
+    outline: none;
+    font-size: 2rem;
 }
 
 .token-dropdown_amount::placeholder {
