@@ -12,7 +12,7 @@ import {
 import { clusterApiUrl } from '@solana/web3.js';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import './index.css';
-import image from './assets/solanaLogo.png';
+import image from './assets/SolStash Text.png';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
@@ -36,7 +36,7 @@ export const Wallet = () => {
           <WalletProvider wallets={wallets} autoConnect>
               <WalletModalProvider>
                   <div className = "wallet-button-flex">
-                      <img src = {image} width = "100px"/>
+                      <img src = {image} width = "125px"/>
                       <WalletMultiButton />
                   </div>
                     <App />

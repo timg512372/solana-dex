@@ -5,8 +5,8 @@
     align-items: end;
     max-width: 100%;
 
-    box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.3);
-    background: rgb(24 24 27);
+    box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.0);
+    background: #1C1C1C;
 
     border-radius: 8px;
     padding: 8px 0;

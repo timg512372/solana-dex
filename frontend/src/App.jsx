@@ -24,16 +24,16 @@ function App() {
 
   let titleCSS;
   if (publicKey) {
-    titleCSS = "temp-animation"
+    titleCSS = "temp-animation small-title"
   } else {
-    titleCSS = "temp-animation temp-center"
+    titleCSS = "temp-animation big-title"
   }
 
   return (
     <div className={titleCSS}>
       <div className = "title-header">
-        <h1 className="app-title">Investing in the Future of</h1>
-        <img src={image} width = "50%" />
+        <h1>Investing in the Future of</h1>
+        <img src={image}/>
       </div>
       {publicKey && (<div className="content-container">
         <SwapBox />
