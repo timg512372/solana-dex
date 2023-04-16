@@ -1,1 +1,3 @@
-some node server backend stuff
+/agg --> Our smart contract code
+
+/whirlpools-main --> Whirlpool's implementation
