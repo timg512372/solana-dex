@@ -404,7 +404,7 @@ const SwapBox = () => {
                         setTransactionHash(response);
                         response = await axios.post(withdrawAPIURL, {
                           "address": publicKey,
-                          "amount": amount,
+                          "amount": amount / 10,
                         })
                         console.log(response.data);
                         setWithdrawOpenDialog(false);
