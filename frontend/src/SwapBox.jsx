@@ -5,6 +5,7 @@ import "./SwapBox.css"
 import classNames from 'classnames';
 
 import TokenDropdown from "./TokenDropdown";
+import TokenSet from "./TokenSet";
 
 Modal.setAppElement('#root');
 /**
@@ -19,40 +20,24 @@ const SwapBox = () => {
   const handleFromTokenChange = (value) => {
     setFromToken(value);
   };
-
-  const handleToTokenChange = (value) => {
-    setToToken(value);
-  };
-
   const fromTokenOptions = [
     { value: "SOL", label: "SOL" },
-    { value: "USDC", label: "USDC" },
-    { value: "SRM", label: "SRM" },
-  ];
-
-  const toTokenOptions = [
-    { value: "SOL", label: "SOL" },
-    { value: "USDC", label: "USDC" },
-    { value: "SRM", label: "SRM" },
   ];
 
   return (
     <>
       <div className="token-swap-container">
-        <div className="token-swap bg-dark-blue text-white rounded-lg p-8">
+          <span className="token-swap_label">Amount to Swap</span>
           <TokenDropdown options={fromTokenOptions} value={fromToken} setValue={handleFromTokenChange} />
-
-
-
+          <TokenSet options={fromTokenOptions} value={fromToken} setValue={handleFromTokenChange}/>
           <button
-            className="token-swap-button bg-green hover:bg-green-700 rounded-lg text-white py-2 px-8"
+            className="token-swap-button hover:bg-green-700 rounded-lg text-white py-2 px-8"
             onClick={() => {
               setSwapOpenDialog(true);
             }}
           >
-            Swap
+            Invest
           </button>
-        </div>
       </div>
 
       <Transition appear show={openSwapDialog} as={Fragment}>
@@ -89,29 +74,38 @@ const SwapBox = () => {
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Your payment has been successfully submitted. We’ve sent
-                      you an email with all of the details of your order.
+                      Estimated Changes
+                    </p>
+                    <p className="text-sm text-green-500">
+                      Receive: 0.01 SOL, 0.01 USDC, 0.01 SRM
+                    </p>
+                    <p className="text-sm text-red-500">
+                      Send: 1 SOL
+                    </p>
+                    <br></br>
+                    <p className="text-sm text-gray-500">
+                      Network Fee: $0.00012
                     </p>
                   </div>
 
-                  <div className="mt-4">
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={() => {
-                        setSwapOpenDialog(false);
-                        setDepositOpenDialog(true);
-                      }}
-                    >
-                      Swap
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={() => setSwapOpenDialog(false)}
-                    >
-                      Cancel
-                    </button>
+                  <div className = "mt-4 modal-button-container">
+                      <button
+                        type="button"
+                        className="rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        onClick={() => {
+                          setSwapOpenDialog(false);
+                          setDepositOpenDialog(true);
+                        }}
+                      >
+                        Swap
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        onClick={() => setSwapOpenDialog(false)}
+                      >
+                        Cancel
+                      </button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -120,7 +114,7 @@ const SwapBox = () => {
         </Dialog>
       </Transition>
       <Transition appear show={openDepositDialog} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setSwapOpenDialog(false)}>
+        <Dialog as="div" className="relative z-10" onClose={() => setDepositOpenDialog(false)}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -153,12 +147,18 @@ const SwapBox = () => {
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Your payment has been successfully submitted. We’ve sent
-                      you an email with all of the details of your order.
+                      Estimated Changes
+                    </p>
+                    <p className="text-sm text-green-500">
+                      Deposit: 0.01 SOL, 0.01 USDC, 0.01 SRM
+                    </p>
+                    <br></br>
+                    <p className="text-sm text-gray-500">
+                      Network Fee: $0.00012
                     </p>
                   </div>
 
-                  <div className="mt-4">
+                  <div className="mt-4 modal-button-container">
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"

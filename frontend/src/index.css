@@ -24,8 +24,10 @@ body {
   width: 100%;
   height: 100%;
 
-  background: blue;
+  /* background: #000; */
+  background-image: url(./assets/background.jpg); 
   background-size: cover;
+  backdrop-filter: saturate(7) brightness(0.1);
 }
 
 button.wallet-button {

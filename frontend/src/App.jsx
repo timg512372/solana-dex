@@ -12,10 +12,10 @@ function App() {
 
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
-  const [ balance, setBalance ] = useState(0);
+  const [balance, setBalance] = useState(0);
 
   useEffect(() => {
-    (async  () => {
+    (async () => {
       let balance = await connection.getBalance(publicKey);
       setBalance(balance);
     })();

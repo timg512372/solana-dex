@@ -18,14 +18,13 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 export const Wallet = () => {
   // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
   const network = WalletAdapterNetwork.Devnet;
-  const { publicKey } = useWallet();
+//   const { publicKey } = useWallet();
 
   // You can also provide a custom RPC endpoint.
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
   const wallets = useMemo(
       () => [
-          new PhantomWalletAdapter(),
           new UnsafeBurnerWalletAdapter()
       ],
       [network]
@@ -35,9 +34,9 @@ export const Wallet = () => {
       <ConnectionProvider endpoint={endpoint}>
           <WalletProvider wallets={wallets} autoConnect>
               <WalletModalProvider>
-                  <flex className = "wallet-button-flex">
+                  <div className = "wallet-button-flex">
                       <WalletMultiButton />
-                  </flex>
+                  </div>
                     <App />
               </WalletModalProvider>
           </WalletProvider>

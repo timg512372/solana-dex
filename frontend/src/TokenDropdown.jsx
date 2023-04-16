@@ -7,6 +7,7 @@ const TokenDropdown = ({ options, value, setValue }) => {
   //conv rate: 24.48
 
   const [enteredValue, setEnteredValue] = useState("");
+  const [isFocused, setFocus] = useState(false);
 
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -22,28 +23,30 @@ const TokenDropdown = ({ options, value, setValue }) => {
   const inUSD = (+enteredValue * 24.48).toFixed(2);
 
   return (
-    <div className="token-dropdown">
-      <div className="token-dropdown_stack">
-        <input
-          className="token-dropdown_amount"
-          type="text"
-          placeholder="0.00"
-          value={enteredValue}
-          onChange={(e) => setEnteredValue(e.target.value)}
+    <div className={`token-dropdown ${isFocused ? "token-dropdown-focused" : ""}`}>
+      <input
+        className="token-dropdown_amount"
+        type="text"
+        placeholder="0.00"
+        value={enteredValue}
+        onChange={(e) => setEnteredValue(e.target.value)}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}
+      />
+
+      <div className="token-dropdown_button">
+        <img
+          className="token-menu-icon"
+          src={`/tokens/${value}.png`}
+          alt={`${value} icon`}
         />
-        <span className="token-dropdown_stack_bottom">≈ {inUSD} USD</span>
+        <span>{value}</span>
       </div>
-      <div className="token-dropdown_stack">
-        <div className="token-dropdown_button">
-          <img
-            className="token-menu-icon"
-            src={`/tokens/${value}.png`}
-            alt={`${value} icon`}
-          />
-          <span>{value}</span>
-        </div>
-        <span className="token-dropdown_stack_bottom">Up To XXX SOL</span>
-      </div>
+
+      
+      <span className="token-dropdown_stack_bottom token-dropdown_left">{enteredValue && `≈ ${inUSD} USD`}</span>
+
+      <span className="token-dropdown_stack_bottom token-dropdown_right">Up To {balance} SOL</span>
     </div>
   );
 };
