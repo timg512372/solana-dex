@@ -14,14 +14,34 @@
   padding: 16px;
 }
 
+.token-swap_label:first-of-type {
+  position: relative;
+}
+
+.token-swap_label:first-of-type::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 8px;
+  right: 8px;
+  display: block;
+  height: 1px;
+  background: rgb(124 58 237);
+}
+
+div + .token-swap_label {
+  margin-top: 1.5rem;
+}
+
 .token-swap_label {
   display: block;
   text-align: left;
 
-  font-weight: 500;
+  font-weight: 400;
   color: rgb(148 163 184);
-  padding-left: 16px;
+  padding-left: 12px;
   margin-bottom: 4px;
+  font-size: 1rem;
 }
 
 .token-swap-selection {

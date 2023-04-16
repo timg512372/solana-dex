@@ -20,7 +20,7 @@ const TokenDropdown = ({ options, value, setValue }) => {
     })();
   }, [publicKey]);
 
-  const inUSD = (+enteredValue * 24.48).toFixed(2);
+  const inUSD = ((+enteredValue || 0) * 24.48).toFixed(2);
 
   return (
     <div className={`token-dropdown ${isFocused ? "token-dropdown-focused" : ""}`}>
@@ -44,7 +44,7 @@ const TokenDropdown = ({ options, value, setValue }) => {
       </div>
 
       
-      <span className="token-dropdown_stack_bottom token-dropdown_left">{enteredValue && `≈ ${inUSD} USD`}</span>
+      <span className="token-dropdown_stack_bottom token-dropdown_left">≈ ${inUSD} USD</span>
 
       <span className="token-dropdown_stack_bottom token-dropdown_right">Up To {balance} SOL</span>
     </div>

@@ -7,6 +7,7 @@ import { Keypair, SystemProgram, Transaction } from '@solana/web3.js';
 import SwapBox from "./SwapBox";
 
 import "./App.css";
+import image from './assets/solanaText.png';
 
 function App() {
 
@@ -22,13 +23,14 @@ function App() {
   }, [publicKey]);
 
   return (
-    <div className="App">
-      <div>
-        <h1 className="app-title">Investing in the Future of<br></br>Solana</h1>
-        {publicKey && (<div className="content-container">
-          <SwapBox />
-        </div>)}
+    <div>
+      <div className = "title-header">
+        <h1 className="app-title">Investing in the Future of</h1>
+        <img src={image} width = "50%" />
       </div>
+      {publicKey && (<div className="content-container">
+        <SwapBox />
+      </div>)}
     </div>
   );
 }

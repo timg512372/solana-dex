@@ -1,7 +1,8 @@
 .token-dropdown {
     display: grid;
-    grid-template-columns: 200px 130px;
+    grid-template-columns: 150px 130px;
     grid-column-gap: 32px;
+    align-items: end;
     max-width: 100%;
 
     border: 2px solid transparent;
@@ -53,13 +54,14 @@
     font-size: 3rem;
     text-align: left;
     font-family: Menlo, monospace;
+    font-weight: 400;
 
     padding-left: 12px;
     line-height: 1;
 }
 
 .token-dropdown_amount::placeholder {
-    color: rgb(156 163 175);
+    color: rgb(107 114 128);
 }
 
 .token-dropdown_stack {
@@ -70,8 +72,8 @@
 .token-dropdown_stack_bottom {
   text-overflow: ellipsis;
   overflow: hidden;
-  font-size: 0.8rem;
-  color: rgb(156 163 175);
+  font-size: 1rem;
+  color: rgb(75 85 99);
 }
 
 .token-dropdown_left {

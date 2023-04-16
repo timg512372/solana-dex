@@ -29,6 +29,7 @@ const SwapBox = () => {
       <div className="token-swap-container">
           <span className="token-swap_label">Amount to Swap</span>
           <TokenDropdown options={fromTokenOptions} value={fromToken} setValue={handleFromTokenChange} />
+          <span className="token-swap_label">SolStash™ Composition</span>
           <TokenSet options={fromTokenOptions} value={fromToken} setValue={handleFromTokenChange}/>
           <button
             className="token-swap-button hover:bg-green-700 rounded-lg text-white py-2 px-8"
